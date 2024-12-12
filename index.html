@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Auction Calculator</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f4f4f4;
+            margin: 0;
+        }
+
+        .calculator {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(to right, #007BFF, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+            font-size: 16px;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .profit {
+            background: linear-gradient(to right, #28a745, #1e7e34);
+        }
+
+        .net-cost {
+            background: linear-gradient(to right, #dc3545, #c82333);
+        }
+
+        .total-floor-fees {
+            background: linear-gradient(to right, #fd7e14, #e95420);
+        }
+
+        .max-bid {
+            background: linear-gradient(to right, #007bff, #0062cc);
+        }
+
+        .result-box > div {
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .breakdown {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .result-box:hover {
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>Auction Calculator</h2>
+        <div class="input-group">
+            <label for="wholesalePrice">Wholesale Price</label>
+            <input type="number" id="wholesalePrice" placeholder="Enter Wholesale Price" inputmode="decimal" step="0.01">
+        </div>
+        <div class="input-group">
+            <label for="retailPrice">Retail Price</label>
+            <input type="number" id="retailPrice" placeholder="Enter Retail Price" inputmode="decimal" step="0.01">
+        </div>
+        <button onclick="calculate()">Calculate</button>
+
+        <div id="results" style="display: none;">
+            <div class="result-box profit" onclick="toggleBreakdown('profitBreakdown')">
+                <div id="profit">Profit: $0.00</div>
+            </div>
+            <div class="result-box net-cost" onclick="toggleBreakdown('netCostBreakdown')">
+                <div id="netCost">Net Cost: $0.00</div>
+                <div id="netCostBreakdown" class="breakdown">
+                    <!-- Breakdown details will be filled here -->
+                </div>
+            </div>
+            <div class="result-box total-floor-fees" onclick="toggleBreakdown('floorFeesBreakdown')">
+                <div id="totalFloorFees">Total Floor Fees: $0.00</div>
+                <div id="floorFeesBreakdown" class="breakdown">
+                    <!-- Breakdown details will be filled here -->
+                </div>
+            </div>
+            <div class="result-box max-bid">
+                <div id="maxBid">Max Bid: $0.00</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const wholesalePrice = parseFloat(document.getElementById('wholesalePrice').value);
+            const retailPrice = parseFloat(document.getElementById('retailPrice').value);
+
+            if (isNaN(wholesalePrice) || isNaN(retailPrice)) {
+                alert("Please enter valid numbers for both prices.");
+                return;
+            }
+
+            const buyFee = calculateBuyFee(wholesalePrice);
+            const assuranceFee = 195; 
+            let days = 60; 
+            let floorInterest = calculateFloorInterest(wholesalePrice, days);
+            let floorFee = 120; 
+
+            if(wholesalePrice > 40000) {
+                const luxuryFee = wholesalePrice * 0.005;
+                floorInterest += luxuryFee;
+            }
+
+            const netCost = wholesalePrice + buyFee + assuranceFee + floorInterest + floorFee;
+            const profit = retailPrice - netCost;
+            const maxTotalCost = retailPrice * 0.8;
+            const maxBid = maxTotalCost - (buyFee + assuranceFee + floorInterest + floorFee);
+
+            document.getElementById('profit').innerText = `Profit: $${profit.toFixed(2)}`;
+            document.getElementById('netCost').innerText = `Net Cost: $${netCost.toFixed(2)}`;
+            document.getElementById('totalFloorFees').innerText = `Total Floor Fees: $${(floorInterest + floorFee).toFixed(2)}`;
+            document.getElementById('maxBid').innerText = `Max Bid: $${maxBid.toFixed(2)}`;
+
+            updateBreakdown('netCostBreakdown', [
+                { label: 'Buy Fee', value: buyFee },
+                { label: 'Assurance Fee', value: assuranceFee },
+                { label: 'Floor Costs (Interest)', value: floorInterest },
+                { label: 'Floor Costs (Fee)', value: floorFee }
+            ]);
+
+            updateBreakdown('floorFeesBreakdown', [
+                { label: 'Floor Costs (Interest)', value: floorInterest },
+                { label: 'Floor Costs (Fee)', value: floorFee }
+            ]);
+
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function calculateBuyFee(price) {
+            if (price <= 250) return 95;
+            if (price <= 500) return 95;
+            if (price <= 999) return 175;
+            if (price <= 1499) return 275;
+            if (price <= 1999) return 295;
+            if (price <= 2999) return 345;
+            if (price <= 3999) return 365;
+            if (price <= 4999) return 385;
+            if (price <= 5999) return 395;
+            if (price <= 6999) return 455;
+            if (price <= 7999) return 475;
+            if (price <= 8999) return 495;
+            if (price <= 9999) return 550;
+            if (price <= 10999) return 575;
+            if (price <= 11999) return 595;
+            if (price <= 12999) return 625;
+            if (price <= 13999) return 675;
+            if (price <= 14999) return 695;
+            if (price <= 16999) return 755;
+            if (price <= 18999) return 795;
+            if (price <= 20999) return 795;
+            if (price <= 22999) return 795;
+            if (price <= 46999) return 795;
+            if (price <= 49999) return 775;
+            if (price <= 52999) return 805;
+            if (price <= 54999) return 865;
+            if (price <= 59999) return 920;
+            if (price <= 64999) return 980;
+            if (price <= 69999) return 1035;
+            if (price <= 74999) return 1095;
+            if (price <= 79999) return 1150;
+            if (price <= 84999) return 1210;
+            if (price <= 89999) return 1265;
+            if (price <= 94999) return 1325;
+            if (price <= 99999) return 1380;
+            return 1440;
+        }
+
+        function calculateFloorInterest(price, days = 30) {
+            return (price / 10000) * 4.30 * days;
+        }
+
+        function updateBreakdown(id, items) {
+            const container = document.getElementById(id);
+            container.innerHTML = '';
+            items.forEach(item => {
+                const p = document.createElement('p');
+                p.textContent = `${item.label}: $${item.value.toFixed(2)}`;
+                container.appendChild(p);
+            });
+        }
+
+        function toggleBreakdown(id) {
+            const breakdown = document.getElementById(id);
+            breakdown.style.display = breakdown.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html>
