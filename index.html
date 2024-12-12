@@ -6,38 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Auction Calculator</title>
     <style>
-        /* Base styles */
         body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #FFA07A, #FFF8DC);
+            font-family: 'Roboto', Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            background: #f4f4f4;
             margin: 0;
-            color: #333;
         }
 
-        /* Calculator Container */
         .calculator {
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 20px;
-            padding: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
             box-sizing: border-box;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
         }
 
-        h2 {
-            text-align: center;
-            color: #1A1A1A;
-            margin-bottom: 30px;
-            font-weight: 500;
-        }
-
-        /* Form Inputs */
         .input-group {
             margin-bottom: 20px;
         }
@@ -45,93 +33,73 @@
         .input-group label {
             display: block;
             margin-bottom: 5px;
-            font-weight: 500;
-            color: #555;
         }
 
         .input-group input {
             width: 100%;
-            padding: 15px;
-            border: 1px solid #E0E0E0;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.5);
-            color: #333;
-            font-size: 1rem;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
             box-sizing: border-box;
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
-        .input-group input:focus {
-            outline: none;
-            border-color: #FFA07A;
-            box-shadow: 0 0 10px rgba(255, 160, 122, 0.3);
-        }
-
-        /* Button Styles */
         button {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(to right, #FFA07A, #FF7F50);
+            padding: 10px;
+            background: linear-gradient(to right, #007BFF, #0056b3);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 5px;
             cursor: pointer;
-            transition: transform 0.1s ease-in-out, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(255, 160, 122, 0.4);
+            transition: transform 0.1s ease-in-out;
+            font-size: 16px;
         }
 
         button:hover {
             transform: scale(1.02);
-            box-shadow: 0 8px 20px rgba(255, 160, 122, 0.5);
         }
 
-        /* Result Boxes */
         .result-box {
-            margin-top: 15px;
+            margin-top: 20px;
             padding: 15px;
             border-radius: 10px;
-            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .result-box:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
         .profit {
-            background: linear-gradient(to right, #98FB98, #7FFF00);
+            background: linear-gradient(to right, #28a745, #1e7e34);
         }
 
-        .net-cost, .total-floor-fees {
-            background: linear-gradient(to right, #FF6347, #FF4500);
+        .net-cost {
+            background: linear-gradient(to right, #dc3545, #c82333);
+        }
+
+        .total-floor-fees {
+            background: linear-gradient(to right, #fd7e14, #e95420);
         }
 
         .max-bid {
-            background: linear-gradient(to right, #87CEEB, #00B7EB);
+            background: linear-gradient(to right, #007bff, #0062cc);
         }
 
         .result-box > div {
             color: white;
-            font-weight: 600;
+            font-weight: bold;
             text-align: center;
         }
 
         .breakdown {
             display: none;
-            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.1);
             padding: 10px;
+            margin-top: 10px;
             border-radius: 5px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(5px);
         }
 
-        .breakdown p {
-            color: white;
-            margin: 5px 0;
-            font-size: 0.9em;
+        .result-box:hover {
+            transform: translateY(-3px);
         }
     </style>
 </head>
